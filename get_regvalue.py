@@ -13,4 +13,7 @@ def get_regvalue(regkey, regvalue):
 
     return value
 
-print(get_regvalue('SOFTWARE\\ImageMagick\\Current', 'LibPath'))
+try:
+    print(get_regvalue('SOFTWARE\\ImageMagick\\Current', 'LibPath'))
+except FileNotFoundError:
+    raise Exception("Could not find registry key SOFTWARE\\ImageMagick\\Current. Is ImageMagick installed and in the registry?")
