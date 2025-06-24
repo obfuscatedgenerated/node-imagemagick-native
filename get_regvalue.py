@@ -13,4 +13,4 @@ def get_regvalue(regkey, regvalue):
 
     return value
 
-print get_regvalue('SOFTWARE\\ImageMagick\\Current', 'LibPath')
+print(get_regvalue('SOFTWARE\\ImageMagick\\Current', 'LibPath'))
