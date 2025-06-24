@@ -3,13 +3,11 @@
     ['OS=="win"', {
       'variables': {
         'MAGICK_ROOT%': '<!(python get_regvalue.py)',
-        # download the dll binary and check off for libraries and includes
         'OSX_VER%': "0",
       }
     }],
     ['OS=="mac"', {
       'variables': {
-        # matches 10.9.X , 10.10 and outputs 10.9, 10.10, 10.11, 10.12, 10.13
         'OSX_VER%': "<!(sw_vers | grep 'ProductVersion:' | grep -o '10.[0-9]*')",
       }
     }, {
@@ -24,6 +22,9 @@
       "sources": [ "src/imagemagick.cc" ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
+      'cflags': [ '-v' ],
+      'cflags_cc': [ '-v' ],
+      'ldflags': [ '-Wl,-v' ],
       "include_dirs" : [
         "<!(node -e \"require('nan')\")"
       ],
@@ -36,7 +37,15 @@
           ],
           'include_dirs': [
             '<(MAGICK_ROOT)/include',
-          ]
+          ],
+          'msvs_settings': {
+            'VCCLCompilerTool': {
+              'AdditionalOptions': ['/verbose'],
+            },
+            'VCLinkerTool': {
+              'AdditionalOptions': ['/VERBOSE'],
+            }
+          }
         }],
         ['OS=="win" and target_arch!="x64"', {
           'defines': [
@@ -47,45 +56,57 @@
           'xcode_settings': {
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
             'OTHER_CFLAGS': [
-              '<!@(pkg-config --cflags ImageMagick++)'
+              '<!@(pkg-config --cflags ImageMagick++)',
+              '-v'
             ],
             'OTHER_CPLUSPLUSFLAGS' : [
               '<!@(pkg-config --cflags ImageMagick++)',
               '-std=c++11',
               '-stdlib=libc++',
+              '-v'
             ],
-            'OTHER_LDFLAGS': ['-stdlib=libc++'],
-            'MACOSX_DEPLOYMENT_TARGET': '10.7', # -mmacosx-version-min=10.7
+            'OTHER_LDFLAGS': [
+              '-stdlib=libc++',
+              '-Wl,-v'
+            ],
+            'MACOSX_DEPLOYMENT_TARGET': '10.7',
           },
           "libraries": [
              '<!@(pkg-config --libs ImageMagick++)',
           ],
           'cflags': [
-            '<!@(pkg-config --cflags ImageMagick++)'
+            '<!@(pkg-config --cflags ImageMagick++)',
+            '-v'
           ],
         }],
         ['OS=="mac"', {
           'xcode_settings': {
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
             'OTHER_CFLAGS': [
-              '<!@(pkg-config --cflags ImageMagick++)'
-            ]
+              '<!@(pkg-config --cflags ImageMagick++)',
+              '-v'
+            ],
+            'OTHER_LDFLAGS': [ '-Wl,-v' ]
           },
           "libraries": [
              '<!@(pkg-config --libs ImageMagick++)',
           ],
           'cflags': [
-            '<!@(pkg-config --cflags ImageMagick++)'
+            '<!@(pkg-config --cflags ImageMagick++)',
+            '-v'
           ],
         }],
-        ['OS=="linux" or OS=="solaris" or OS=="freebsd"', { # not windows not mac
+        ['OS=="linux" or OS=="solaris" or OS=="freebsd"', {
           "libraries": [
             '<!@(pkg-config --libs ImageMagick++)',
           ],
           'cflags': [
-            '<!@(pkg-config --cflags ImageMagick++)'
+            '<!@(pkg-config --cflags ImageMagick++)',
+            '-v'
           ],
+          'ldflags': [ '-Wl,-v' ]
         }]
       ]
-    }]
-  }
+    }
+  ]
+}
